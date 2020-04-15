@@ -1,0 +1,28 @@
+
+with table_tmp as 
+(
+          select 'a1' as truckid,'2020-04-15 10:05:20' as trigger_time,1 as speed_range
+union all select 'a1' as truckid,'2020-04-15 10:05:15' as trigger_time,1 as speed_range
+union all select 'a1' as truckid,'2020-04-15 10:05:01' as trigger_time,3 as speed_range
+union all select 'a1' as truckid,'2020-04-15 10:05:30' as trigger_time,2 as speed_range
+union all select 'a1' as truckid,'2020-04-15 10:05:02' as trigger_time,3 as speed_range
+union all select 'b2' as truckid,'2020-04-15 10:05:31' as trigger_time,1 as speed_range
+union all select 'b2' as truckid,'2020-04-15 10:05:32' as trigger_time,1 as speed_range
+union all select 'b2' as truckid,'2020-04-15 10:05:33' as trigger_time,2 as speed_range
+) 
+
+select truckid
+      ,speed_range || (rn1 - rn2) as group_id
+      ,collect_list(trigger_time) as trigger_time_list
+  from
+      (
+      select truckid
+            ,trigger_time
+            ,speed_range
+            ,row_number() over(partition by truckid order by trigger_time) as rn1
+            ,row_number() over(partition by truckid,speed_range order by trigger_time) as rn2
+        from table_tmp
+      )
+group by truckid
+        ,speed_range || (rn1 - rn2)
+

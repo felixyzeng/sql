@@ -1,0 +1,29 @@
+with table_tmp as 
+(
+          select 'a1' as category_id,'33' as topic_id,'33' as score, 3 as rank
+union all select 'a1' as category_id,'22' as topic_id,'22' as score, 2 as rank
+union all select 'b2' as category_id,'99' as topic_id,'60' as score, 1 as rank
+union all select 'a1' as category_id,'44' as topic_id,'11' as score, 1 as rank
+union all select 'b2' as category_id,'77' as topic_id,'100' as score, 2 as rank
+
+
+) 
+
+select 
+      category_id,
+      regexp_replace(
+         concat_ws(',',
+          sort_array(
+             collect_list(
+               concat_ws(':',lpad(cast(rank as string),5,'0'),cast(topic_id as string))
+             )
+          )
+         )
+      ,'\\d+\:','')
+from table_tmp
+where rank >= 1 and rank <= 1000
+group by category_id;
+
+
+
+

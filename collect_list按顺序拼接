@@ -1,3 +1,4 @@
+--第一种
 with table_tmp as 
 (
           select 'a1' as category_id,'33' as topic_id,'33' as score, 3 as rank
@@ -25,5 +26,24 @@ where rank >= 1 and rank <= 1000
 group by category_id;
 
 
+--第二种
+with table_tmp as
+(
+          select 'a1' as category_id,'33' as topic_id, 3 as rnk
+union all select 'a1' as category_id,'22' as topic_id, 2 as rnk
+union all select 'b2' as category_id,'99' as topic_id, 1 as rnk
+union all select 'a1' as category_id,'44' as topic_id, 1 as rnk
+union all select 'b2' as category_id,'77' as topic_id, 2 as rnk
+)
 
+select category_id
+      ,collect_list(topic_id)
+  from 
+      (
+      select *
+        from table_tmp 
+    distribute by category_id
+    sort by category_id,rnk
+      )
+group by category_id
 

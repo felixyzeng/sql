@@ -1,0 +1,26 @@
+select id
+      ,pred
+      ,score
+      ,max(score) over(partition by groupid) as score_new
+  from 
+    (
+    select id
+          ,pred
+          ,score
+          ,count(score) over(order by pred) as groupid
+      from 
+          (
+                    select 5 as id,0.1 as pred,100 as score
+          
+          union all select 3,0.3,80
+          union all select 4,0.4,70
+          union all select 6,0.4,null
+          union all select 7,0.7,null
+          union all select 11,0.2,90
+          union all select 13,0.6,60
+          union all select 20,0.5,null
+          union all select 90,0.8,50
+          )
+    )
+        
+    order by pred

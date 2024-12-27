@@ -1,0 +1,32 @@
+
+
+
+    select *
+      from 
+        (
+        select *
+               --方式一：先分别用反正切函数atan2算出方向角，然后再取方向角最接近的
+              ,row_number() over(partition by truckno,trigger_time,lat_wgs84,lng_wgs84 
+                                     order by case when abs(trace_course-road_course)>180 then 360 - abs(trace_course-road_course)  
+                                                   else abs(trace_course-road_course)
+                                                   end
+                                ) as rn
+              --方式二：直接用向量积取acos算出夹角，然后再取夹角最小的，x1,x2,y1,y2为经纬度相减的值
+              ,row_number() over(partition by truckno,trigger_time,lat_wgs84,lng_wgs84 
+                                     order by acos((x1*x2 + y1*y2) / (sqrt(x1*x1 + y1*y1) * sqrt(x2*x2 + y2*y2))) /3.1415926 * 180
+                                     ) as rn 
+
+          from 
+             (
+             select *
+                   ,(atan2((lng_wgs84_next-lng_wgs84),(lat_wgs84_next-lat_wgs84))/3.1415926*180 + 360) %360 as trace_course
+                   ,(atan2((lng_wgs84_next_match-lng_wgs84_match),(lat_wgs84_next_match-lat_wgs84_match))/3.1415926*180 + 360) %360 as road_course
+                   ,lat_wgs84_next-lat_wgs84 as x1,lng_wgs84_next-lng_wgs84 as y1
+                   ,lat_wgs84_next_match-lat_wgs84_match as x2,lng_wgs84_next_match-lng_wgs84_match as y2
+               from tmp.tmp_20220615_zengyu_5_plus_e6_${data_date}
+             )
+        )
+     where rn=1
+
+
+

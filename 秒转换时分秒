@@ -1,0 +1,25 @@
+
+select seconds
+      ,CASE
+        -- 如果秒数大于等于 3600（24 小时），显示XX 天 XX 小时 XX 分钟 XX 秒格式
+        WHEN seconds >= 3600 * 24 THEN CONCAT(floor(seconds / (3600 * 24) ), '天', floor(seconds % (3600*24) / 3600 ), '小时', floor((seconds % 3600) / 60), '分钟', floor(seconds % 60), '秒')
+        -- 如果秒数大于等于 3600（1 小时），显示 XX 小时 XX 分钟 XX 秒格式
+        WHEN seconds >= 3600 THEN CONCAT(floor(seconds / 3600 ), '小时', floor((seconds % 3600) / 60 ), '分钟', floor(seconds % 60 ), '秒')
+        -- 如果秒数在 60 到 3600 之间，只显示 XX 分钟 XX 秒格式
+        WHEN seconds >= 60 THEN CONCAT(floor((seconds % 3600) / 60 ), '分钟', floor(seconds % 60 ), '秒')
+        -- 如果秒数小于 60，只显示 XX 秒格式
+        ELSE CONCAT(floor(seconds ), '秒')
+        END 
+        AS formatted_time
+  from 
+      (
+      select 5 as seconds
+      union all select 66
+      union all select 3678
+      union all select 3600*24 + 7213
+
+
+      )
+      ;
+
+

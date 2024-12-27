@@ -1,0 +1,13 @@
+select *
+      ,greatest(least(e1,e2) - greatest(s1,s2),0) as overlay
+  from 
+      (
+          select 5 as s1,10 as e1,1 as s2,2 as e2
+union all select 5,10,1,6
+union all select 5,10,1,13
+union all select 5,10,6,8
+union all select 5,10,6,14
+union all select 5,10,12,14
+      )
+
+

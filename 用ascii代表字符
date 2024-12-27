@@ -1,0 +1,8 @@
+select ascii('\'');
+结果39
+Select decode(unhex(hex(39)), 'US-ASCII');
+结果'
+Select decode(unhex(hex(59)), 'US-ASCII');
+结果;
+
+

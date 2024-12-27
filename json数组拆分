@@ -1,1 +1,5 @@
+--方法一
 explode(split(regexp_replace(regexp_extract(road_info,'^\\[(.+)\\]$',1) ,'\\}\\,\\{', '\\}\\|\\|\\{'),'\\|\\|')) as json_single
+
+--方法二
+explode(json_array(road_info)) as json_single
